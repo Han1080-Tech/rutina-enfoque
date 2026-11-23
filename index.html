@@ -9,19 +9,27 @@
 <body>
   <!-- BARRA SUPERIOR: NIVEL, MODO ENERGÍA BAJA Y BANCO DE JUEGO -->
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-row">
-        <h1>PANEL DIARIO DE ENFOQUE</h1>
-        <span id="current-date-label" class="date-pill"></span>
-      </div>
-      <div class="xp-container">
-        <span id="level-badge" class="badge-level">Nivel 1</span>
-        <div class="xp-track">
-          <div id="xp-bar" class="xp-fill"></div>
-        </div>
-        <span id="xp-text" class="muted">0 / 200 XP</span>
-      </div>
+<div class="brand">
+  <div class="brand-row">
+    <h1>PANEL DIARIO DE ENFOQUE</h1>
+    <span id="current-date-label" class="date-pill"></span>
+    <span id="sync-status" class="sync-badge">Local</span>
+  </div>
+  <div class="xp-container">
+    <span id="level-badge" class="badge-level">Nivel 1</span>
+    <div class="xp-track">
+      <div id="xp-bar" class="xp-fill"></div>
     </div>
+    <span id="xp-text" class="muted">0 / 200 XP</span>
+  </div>
+  <div class="auth-bar">
+    <button id="btn-google-login" class="btn btn-ghost btn-sm">Conectar con Google</button>
+    <div id="auth-user-info" class="user-pill" hidden>
+      <span id="auth-user-name"></span>
+      <button id="btn-google-logout" class="btn btn-ghost btn-sm">Salir</button>
+    </div>
+  </div>
+</div>
 
     <div class="topbar-controls">
       <label class="energy-toggle" title="Reduce tus bloques diarios a su versión mínima para no romper la racha en días difíciles">
@@ -175,8 +183,11 @@
       </div>
     </section>
   </main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="storage.js"></script>
+<script src="app.js"></script>
 
-  <script src="storage.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>

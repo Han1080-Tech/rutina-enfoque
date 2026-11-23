@@ -670,8 +670,54 @@ function renderAll() {
 }
 
 // --- INICIALIZACIÓN ---
+function updateAuthUI(user) {
+  const loginBtn = document.getElementById("btn-google-login");
+  const userInfo = document.getElementById("auth-user-info");
+  const userName = document.getElementById("auth-user-name");
+  const syncBadge = document.getElementById("sync-status");
+
+  if (user) {
+    loginBtn.hidden = true;
+    userInfo.hidden = false;
+    userName.textContent = user.displayName || user.email;
+    syncBadge.textContent = "Nube activa";
+    syncBadge.classList.add("online");
+  } else {
+    loginBtn.hidden = false;
+    userInfo.hidden = true;
+    userName.textContent = "";
+    syncBadge.textContent = "Solo local";
+    syncBadge.classList.remove("online");
+  }
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
-  state = await StorageService.loadState();
+  state = StorageService.loadLocalState();
+  renderAll();
+
+  document.getElementById("btn-google-login").addEventListener("click", async () => {
+    try {
+      await StorageService.loginWithGoogle();
+    } catch (err) {
+      alert("No se pudo iniciar sesión con Google: " + err.message);
+    }
+  });
+
+  document.getElementById("btn-google-logout").addEventListener("click", async () => {
+    await StorageService.logoutGoogle();
+  });
+
+  StorageService.initAuth(
+    async (user) => {
+      updateAuthUI(user);
+      state = await StorageService.loadState();
+      renderAll();
+    },
+    (remoteState) => {
+      state = remoteState;
+      renderAll();
+    }
+  );
 
   document.getElementById("toggle-low-energy").addEventListener("change", async (e) => {
     state.lowEnergyMode = e.target.checked;
@@ -704,6 +750,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("btn-spin").addEventListener("click", spinWheel);
   document.getElementById("wheel-mode").addEventListener("change", drawWheel);
   document.getElementById("btn-toggle-timer").addEventListener("click", toggleGameTimer);
-
-  renderAll();
 });

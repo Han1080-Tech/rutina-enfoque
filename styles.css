@@ -630,3 +630,35 @@ body.low-energy-active {
   color: var(--warning);
   border: 1px solid var(--warning);
 }
+
+.auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.sync-badge {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.sync-badge.online {
+  border-color: var(--success);
+  color: var(--success);
+}
