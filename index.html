@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema General de Rutina y Enfoque</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- BARRA SUPERIOR: NIVEL, MODO ENERGÍA BAJA Y BANCO DE JUEGO -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-row">
+        <h1>PANEL DIARIO DE ENFOQUE</h1>
+        <span id="current-date-label" class="date-pill"></span>
+      </div>
+      <div class="xp-container">
+        <span id="level-badge" class="badge-level">Nivel 1</span>
+        <div class="xp-track">
+          <div id="xp-bar" class="xp-fill"></div>
+        </div>
+        <span id="xp-text" class="muted">0 / 200 XP</span>
+      </div>
+    </div>
+
+    <div class="topbar-controls">
+      <label class="energy-toggle" title="Reduce tus bloques diarios a su versión mínima para no romper la racha en días difíciles">
+        <input type="checkbox" id="toggle-low-energy" />
+        <span>Modo Energía Baja</span>
+      </label>
+
+      <div class="game-bank">
+        <div class="bank-info">
+          <span class="bank-label">BANCO DE JUEGO</span>
+          <div class="bank-numbers">
+            <strong id="game-minutes">0</strong> <span>min</span>
+            <span id="game-timer-display" class="timer-pill">00:00</span>
+          </div>
+        </div>
+        <button id="btn-toggle-timer" class="btn btn-accent" disabled>Jugar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid-layout">
+    <!-- MÓDULO 1: RUTINA DIARIA (BLOQUES FIJOS DEL DÍA) -->
+    <section class="card">
+      <div class="card-header">
+        <h2>1. Rutina de Hoy (Bloques Fijos)</h2>
+        <span id="daily-progress-badge" class="tag-meta">0 / 0</span>
+      </div>
+
+      <form id="daily-form" class="inline-form">
+        <input type="time" id="daily-time" class="input" value="10:30" required />
+        <input type="text" id="daily-title" class="input" placeholder="Bloque diario (ej. Japonés 30 min)" required />
+        <input type="text" id="daily-floor" class="input" placeholder="Piso mínimo (ej. Solo 5 min)" required />
+        <button type="submit" class="btn btn-primary">+</button>
+      </form>
+
+      <div id="daily-list" class="daily-list"></div>
+    </section>
+
+    <!-- MÓDULO 2: RULETA DE RECOMPENSA Y DECISIÓN -->
+    <section class="card wheel-card">
+      <div class="card-header">
+        <h2>2. Ruleta de Premios y Decisión</h2>
+        <div class="wheel-header-actions">
+          <span class="token-badge">Fichas: <strong id="wheel-tokens">1</strong></span>
+          <button id="btn-toggle-prizes" class="btn btn-ghost btn-sm">Editar Premios</button>
+        </div>
+      </div>
+
+      <div id="prize-editor" class="prize-editor" hidden>
+        <form id="prize-form" class="prize-form">
+          <input type="text" id="prize-label" class="input" placeholder="Nuevo premio (ej. Helado / +25 min)" required />
+          <select id="prize-type" class="input">
+            <option value="treat">Premio Físico / Libre</option>
+            <option value="minutes">+20 min Juego</option>
+            <option value="xp">+100 XP</option>
+          </select>
+          <button type="submit" class="btn btn-success btn-sm">Agregar</button>
+        </form>
+        <div id="prize-tags" class="prize-tags"></div>
+      </div>
+
+      <div class="wheel-controls">
+        <select id="wheel-mode" class="input">
+          <option value="premios">Modo: Canjear Premio (1 ficha)</option>
+          <option value="tareas">Modo: Elegir Tarea (Prioriza Necesarias)</option>
+        </select>
+        <button id="btn-spin" class="btn btn-accent">Girar Ruleta</button>
+      </div>
+
+      <div class="wheel-wrapper">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheel-canvas" width="230" height="230"></canvas>
+      </div>
+
+      <div id="wheel-result" class="wheel-result">Gira la ruleta para ganar un bono o elegir qué hacer ahora.</div>
+    </section>
+
+    <!-- MÓDULO 3: METAS PROGRESIVAS CON COMPENSACIÓN L/M/V -->
+    <section class="card full-width">
+      <div class="card-header">
+        <h2>3. Metas Progresivas con Compensación Automática</h2>
+        <button id="btn-toggle-goal-form" class="btn btn-primary btn-sm">+ Nueva Meta</button>
+      </div>
+
+      <form id="goal-form" class="goal-form" hidden>
+        <input type="text" id="goal-title" class="input" placeholder="Nombre de la meta (ej. Curso Python 150 videos)" required />
+        <input type="text" id="goal-unit" class="input" placeholder="Unidad (ej. videos, capítulos)" required />
+        <input type="number" id="goal-total" class="input" min="1" placeholder="Total (ej. 150)" required />
+        <input type="number" id="goal-base" class="input" min="1" value="3" placeholder="Por sesión" required />
+        <select id="goal-schedule" class="input">
+          <option value="LMV">Lunes · Miércoles · Viernes</option>
+          <option value="LV">Lunes a Viernes</option>
+        </select>
+        <button type="submit" class="btn btn-success">Guardar Meta</button>
+      </form>
+
+      <div id="goals-container" class="goals-grid"></div>
+    </section>
+
+    <!-- MÓDULO 4: TABLERO KANBAN GENERAL (ENFOQUE ÚNICO 1/1) -->
+    <section class="card full-width">
+      <div class="card-header">
+        <h2>4. Tablero Kanban General (Máximo 1 Tarea en Curso)</h2>
+        <span id="doing-lock-msg" class="lock-status">Disponible: Puedes enfocar 1 tarea</span>
+      </div>
+
+      <form id="task-form" class="task-form">
+        <input type="text" id="task-title" class="input" placeholder="Nueva tarea del día..." required />
+        <select id="task-category" class="input">
+          <option value="Universidad">Universidad</option>
+          <option value="Proyecto">Proyecto</option>
+          <option value="Personal">Personal</option>
+          <option value="Hogar">Hogar</option>
+        </select>
+        <select id="task-priority" class="input">
+          <option value="necesaria">Necesaria (Con plazo)</option>
+          <option value="deseo">Quiero hacer (Personal)</option>
+        </select>
+        <select id="task-reward" class="input">
+          <option value="15">+15 min juego</option>
+          <option value="30" selected>+30 min juego</option>
+          <option value="45">+45 min juego</option>
+        </select>
+        <button type="submit" class="btn btn-primary">+ Agregar</button>
+      </form>
+
+      <div class="filter-bar">
+        <span class="muted">Filtrar pendientes:</span>
+        <button class="chip active" data-filter="ALL">Todas</button>
+        <button class="chip" data-filter="Universidad">Universidad</button>
+        <button class="chip" data-filter="Proyecto">Proyecto</button>
+        <button class="chip" data-filter="Personal">Personal</button>
+        <button class="chip" data-filter="Hogar">Hogar</button>
+      </div>
+
+      <div class="kanban-board">
+        <div class="kanban-col">
+          <h3>Pendientes (Priorizadas)</h3>
+          <div id="col-todo" class="task-list"></div>
+        </div>
+
+        <div class="kanban-col col-focus">
+          <h3>En Curso (Enfoque Único: 1/1)</h3>
+          <div id="col-doing" class="task-list"></div>
+        </div>
+
+        <div class="kanban-col">
+          <h3>Completadas Hoy</h3>
+          <div id="col-done" class="task-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="storage.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
